@@ -1,0 +1,11 @@
+[Done] 1. In PIR code, how is sending d^m + alpha^2 privacy preserving? Also, why can't
+you interpolate to know all polys
+2. BGI18. why is E_F not an input to Gen, for example? \hat{f} has no meaning
+without E_F
+3. BGI18. can we actually get away with disregarding i as an input to Eval?
+4. BGI18. why must we use circuits for (T, \epsilon)-indistinguishability?
+5. BGI18. [s0^L||...] bad notation
+6. BGI18. B should only take in r!
+7. BGI18. (-1)^{t_1^{(n)}} the author omitted parens
+8. BGI18. t_{CW}^L on page 14 is wrong
+9. BGI18. I think indexing with j and j+1 is wrong..
