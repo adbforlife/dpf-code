@@ -20,10 +20,11 @@
 
 \newcommand{\myinfo}{Albert Gao / sixiangg}
 \newcommand{\myhwnum}{1}
-\newcommand{\currdate}{02/27/2022}
+\newcommand{\currdate}{03/19/2022}
 
 \newcommand{\Gen}{\textsf{Gen}}
 \newcommand{\Eval}{\textsf{Eval}}
+\newcommand{\Agg}{\textsf{Agg}}
 \newcommand{\Rec}{\textsf{Rec}}
 \newcommand{\Sim}{\textsf{Sim}}
 \newcommand{\Real}{\textsf{Real}}
@@ -56,64 +57,104 @@
 \end{center}
 
 \section{Context}
-We explore the problem of retrieving an item from a server without revealing which item is retrieved. This general class of problems is generally referred to as private information retrieval (PIR), first introduced in~\cite{chor95}. One class of approaches to this problem makes use of distributed point functions (DPF), first introduced in~\cite{gi14}, with improvements in~\cite{bgi15} and~\cite{bgi18}. Another direction to the problem of PIR is the storage model of servers. Instead of assuming multiple servers that replicate the same data set, some recent work such as~\cite{tajeddine19} looks at PIR involving servers with coded storage. We show that the DPF technique can be applied to the coded setting while maintaining polylogarithmic communication complexity.
+We explore the problem of retrieving an item from a server without revealing which item is retrieved. This general class of problems is referred to as private information retrieval (PIR), first introduced in~\cite{chor95}. One class of approaches to this problem makes use of distributed point functions (DPF), first introduced in~\cite{gi14}, with improvements in~\cite{bgi15} and~\cite{bgi18}. Another direction to the problem of PIR concerns the storage model of servers. Instead of assuming multiple servers that replicate the same data set, some recent work such as~\cite{tajeddine19} looks at PIR involving servers with coded storage. We show that the DPF technique can be applied to the coded setting while maintaining polylogarithmic communication complexity.
 
-Before adapting our approach to coded storage, we first discuss DPF in the setting of replicated storage as well as some of its extensions. Roughly speaking, suppose a client desires item index $\alpha \in \{0,1\}^m$; each server $j \in [n]$ has access to two functions $h,g_j : \{0,1\}^m \to \{0,1\}^r$ such that $h(\gamma)$ is the data at index $\gamma$ and $f = \sum_j g_j$ is a coordinate function that vanishes everwhere but $\alpha$, where $f(\alpha) = 1$. Then as long as each $g_j$ by itself does not reveal $\alpha$ and servers cannot collude, we can compute $h(\alpha) = (h \cdot f)(\alpha) = \sum_\alpha h(\alpha) \sum_j g_j(\alpha) = \sum_j \sum_\alpha h(\alpha)g_j(\alpha)$, where each server $j$ only communicates $\sum_\alpha h(\alpha)g_j(\alpha)$ to the client. We now make our notion precise.
+Before adapting our approach to coded storage, we first discuss PIR and DPF in the setting of replicated storage as well as some of the extensions. As a rough example, suppose each server contains the same $n = 2^m$ items and a client desires item index $\alpha \in \{0,1\}^m$. Suppose each server $j \in [p]$ has access to two functions $h,g_j : \{0,1\}^m \to \mathbb{F}$ such that $h(\beta)$ is the data at index $\beta$ and $f = \sum_j g_j$ is a coordinate function that vanishes everwhere but $\alpha$, where $f(\alpha) = 1$. Then as long as each $g_j$ by itself does not reveal $\alpha$ and servers cannot collude, we can compute $h(\alpha) = (h \cdot f)(\alpha) = \sum_\beta h(\beta) \sum_j g_j(\beta) = \sum_j \sum_\beta h(\beta)g_j(\beta)$, where each server $j$ only communicates $\sum_\beta h(\beta)g_j(\beta)$ to the client. We now make precise a more general definition of such sharing of point functions.
 \begin{definition}
-(Point Function). For $m,r \in \mathbb{Z}^+, \alpha \in \{0,1\}^m, \mu \in \{0,1\}^r$, the point function $f_{\alpha, \mu} : \{0,1\}^m \to \{0,1\}^r$ is defined via
+(Point Function). For $m \in \mathbb{Z}^+, \alpha \in \{0,1\}^m$, the point function $f_{\alpha} : \{0,1\}^m \to \mathbb{F}$ is defined via
 \begin{align*}
-  f_{\alpha, \mu}(\beta) = \begin{cases}
-  \mu, &\beta = \alpha\\
-  0^r, &\beta \neq \alpha
+  f_{\alpha}(\beta) = \begin{cases}
+  1, &\beta = \alpha\\
+  0, &\beta \neq \alpha
   \end{cases}.
 \end{align*}
 \end{definition}
-In order to share point functions among $n$ servers, the client generates $n$ relatively short keys so the servers can evaluate each of the shared functions without too much trouble. Here, we assume one-way functions exist, which implies pseudorandom generators (PRGs) exist.
+In order to share point functions among $p$ servers, the client generates $p$ relatively short keys so the servers can evaluate each of the shared functions without too much trouble. Here, we assume one-way functions exist, which implies pseudorandom generators (PRGs) exist.
 \begin{definition}
-(Distributed Point Function: Syntax). An $n$-party distributed point function (DPF) is a tuple of algorithms (\Gen, \Eval, \Rec) with the following syntax.
+(Distributed Point Function: Syntax). A $p$-party distributed point function (DPF) is a tuple of algorithms (\Gen, \Eval, \Rec) with the following syntax.
 \begin{itemize}
-  \item \Gen($1^\lambda, \alpha, \mu$) is a PPT algorithm that outputs $n$ keys $(k_1, \cdots, k_n)$, where $1^\lambda$ is the security parameter, $\alpha \in \{0,1\}^m$, and $\mu \in \{0,1\}^r$.
-  \item \Eval($k, \beta$) is a PPT algorithm that outputs some $\kappa \in \{0,1\}^r$, where $\beta \in \{0,1\}^m$.
-  \item \Rec($\{(i, \kappa_i) : i \in [n]\}$) is a PPT algorithm that outputs some $\mu' \in \{0,1\}^r$.
+  \item \Gen($1^\lambda, \alpha$) is a PPT algorithm that outputs $p$ keys $(k_1, \cdots, k_p)$, where $1^\lambda$ is the security parameter and $\alpha \in \{0,1\}^m$.
+  \item \Eval($k, \beta$) is a PPT algorithm that outputs some $\kappa \in \mathbb{F}$, where $\beta \in \{0,1\}^m$.
+  \item \Rec($\overrightarrow{\kappa_i}$) is a PPT algorithm that outputs some $\mu \in \mathbb{F}$, where $\overrightarrow{\kappa_i}$ is a length-$p$ vector.
 \end{itemize}
 \end{definition}
 DPF under the setting of at most $a$ unresponsive failures (or $b$ Byzantine servers) is where $\Eval$ may instead return empty string (or arbitrary strings) for at most $a$ (or $b$) servers. We now specify what it means for a DPF to be secure.
 \begin{definition}
-(Distributed Point Function: Security). An $n$-party $t$-secure DPF is a tuple of algorithms $(\Gen, \Eval, \Rec)$ with the following properties.
+(Distributed Point Function: Security). A $p$-party $t$-secure DPF is a tuple of algorithms $(\Gen, \Eval, \Rec)$ with the following properties.
 \begin{itemize}
-\item \textbf{Correctness:} For any nonempty $\alpha, \mu \in \{0,1\}^{*}$, if $(k_1, \cdots, k_n) \leftarrow \Gen(1^{\lambda}, \alpha, \mu)$, then for any $\beta \in \{0,1\}^{|\alpha|}$ we have $\Pr[\Rec(\{(i,\Eval(k_i, \beta)): i \in [n]\}) = f_{\alpha, \mu}(\beta)] = 1$.
-\item \textbf{Secrecy:} For any set $S \subseteq [n]$ of size t, there exists a PPT algorithm $\Sim$ such that for every sequence of $(\alpha_\lambda \in \{0,1\}^\lambda, \mu_\lambda \in \{0,1\}^* \setminus \{\epsilon\})$ where $\lambda \in \mathbb{N}$, the outputs of the following experiments $\Real$ and $\Ideal$ are computationally indistinguishable.
+\item \textbf{Correctness:} For any nonempty $\alpha \in \{0,1\}^{*}$, if $(k_1, \cdots, k_p) \leftarrow \Gen(1^{\lambda}, \alpha)$, then for any $\beta \in \{0,1\}^{|\alpha|}$ we have $\Pr\left[\Rec\left(\overrightarrow{\Eval(k_i, \beta)}\right) = f_{\alpha}(\beta)\right] = 1$.
+\item \textbf{Secrecy:} For any set $S \subseteq [n]$ of size $t$, there exists a PPT algorithm $\Sim$ such that for every sequence of $(\alpha_\lambda \in \{0,1\}^\lambda)$ where $\lambda \in \mathbb{Z}^+$, the outputs of the following experiments $\Real$ and $\Ideal$ are computationally indistinguishable.
 \begin{itemize}
-  \item $\Real(1^{\lambda}): (k_1, \cdots, k_n) \leftarrow \Gen(1^{\lambda}, \alpha_\lambda, \mu_\lambda)$. Output $(k_j)_{j \in S}$.
-  \item $\Ideal(1^{\lambda}):$ Output $\Sim(1^{\lambda}, |\mu_\lambda|)$.
+  \item $\Real(1^{\lambda}): (k_1, \cdots, k_p) \leftarrow \Gen(1^{\lambda}, \alpha_\lambda)$. Output $(k_j)_{j \in S}$.
+  \item $\Ideal(1^{\lambda}):$ Output $\Sim(1^{\lambda})$.
 \end{itemize}
 \end{itemize}
 \end{definition}
+Note that a secure and efficient DPF scheme under this definition does not automatically imply a secure and efficient PIR scheme. We will clarify this point later.
 
 
 \section{Multi-Party DPF}
-We extend two-party DPF construction from~\cite{bgi18} to the $n$-party setting.
+We extend two-party DPF construction from~\cite{bgi18} to the $p$-party setting.
 \begin{theorem}
-An $n$-party $1$-secure DPF under the setting of at most $n-2$ unresponsive failures (or, less than $\frac{n}{2}$ Byzantine failures) exists.
+A $p$-party $1$-secure DPF under the setting of at most $p-2$ unresponsive failures (or, less than $\frac{p}{2}$ Byzantine failures (?)) exists.
 \end{theorem}
 \begin{proof}
-The tuple of algorithms is specified in Algorithm~\ref{alg:dpf}
+The tuple of algorithms is as specified in Algorithm~\ref{alg:dpf}. 
 
 \begin{algorithm}
-\caption{$n$-Party Distributed Point Function}\label{alg:dpf}
-Suppose $G : \{0,1\}^\lambda \to \{0,1\}^{2(\lambda + n - 1)}$ is a pseudorandom generator. Notation-wise, if $b$ is a bit, we use $\overline{b}$ to denote $b \oplus 1$.
+\caption{$p$-Party Distributed Point Function}\label{alg:dpf}
+Let $G : \{0,1\}^\lambda \to \{0,1\}^{2(\lambda + p - 1)}$ be a pseudorandom generator. Notation-wise, if $b$ is a bit, we use $\overline{b}$ to denote $b \oplus 1$. $[p]$ denotes set of integers $\{1, \cdots, p\}$ and $[p^-]$ denotes set of integers $\{2, \cdots, p\} = [p] \setminus \{1\}$.
 \vspace{10px}
 \newline
-\Gen($1^\lambda, \alpha, \mu$):
+\Gen($1^\lambda, \alpha$):
 \begin{algorithmic}[1]
 \State Let $\alpha_1, \cdots, \alpha_m$ be the bit decomposition of $\alpha$.
-\State Sample $s_j^{(0)} \leftarrow \{0,1\}^{\lambda}$ for each $j \in [n]$.
-\State Let $t_{j,0}^{(0)} = 0, t_{j,1}^{(0)} = 1$ for $j \in [n] \setminus \{1\}$.
-\For{$i = 1 \text{ to } n$}
-\State $s_j^0||t_{j,2}^0||\cdots||t_{j,n}^0||s_j^{1}||t_{j,2}^1||\cdots||t_{j,n}^1 \leftarrow G(s_j^{(i-1)})$, for each $j \in [n]$.
-\State $CW_{s_j} \leftarrow s_j^{\overline{\alpha_0}} \oplus s_1^{\overline{\alpha_0}}$, for each $j \in [n] \setminus \{1\}$.
-\State $CW_{t_j}$
+\State Sample $s_j^{(0)} \leftarrow \{0,1\}^{\lambda}$ for each $j \in [p]$.
+\State Let $t_{j,k}^{(0)} \leftarrow \begin{cases} 0, & j \neq k\\ 1, & j = k\end{cases}$, for $j \in [p], k \in [p^-]$.
+\For{$i = 1 \text{ to } m$}
+\State $s_j^0||t_{j,2}^0||\cdots||t_{j,p}^0||s_j^{1}||t_{j,2}^1||\cdots||t_{j,p}^1 \leftarrow G(s_j^{(i-1)})$, for $j \in [p]$.
+\State $CW_{s_k} \leftarrow s_k^{\overline{\alpha_i}} \oplus s_1^{\overline{\alpha_i}}$, for $k \in [p^-]$.
+\State $CW_{t_{j,k}^\beta} \leftarrow \begin{cases} t_{1,k}^\beta \oplus t_{j,k}^\beta, & j \neq k \\ t^\beta_{1,k} \oplus t^\beta_{j,k} \oplus \overline{\alpha_i} \oplus \beta, & j = k\end{cases}$, for $j,k \in [p^-], \beta \in \{0,1\}$.
+\State $CW^{(i)}_k \leftarrow CW_{s_k}||\{CW_{t_{j,k}^0}\}_{j \in [p^-]}||\{CW_{t_{j,k}^1}\}_{j \in [p^-]}$, for $k \in [p^-]$.
+\State $CW^{(i)} \leftarrow CW_2^{(i)} || \cdots || CW_p^{(i)}$.
+\State $s_j^{(i)} \leftarrow s_j^{\alpha_i} \bigoplus_{k \in [p^-]} t_{j,k}^{(i-1)} \cdot CW_{s_k}$, for $j \in [p]$
+\State $t_{j,l}^{(i)} \leftarrow t_{j,l}^{\alpha_i} \bigoplus_{k \in [p^-]} t_{j,k}^{(i-1)} \cdot CW_{t_{j,k}^{\alpha_i}}$, for $j \in [p], l \in [p^-]$.
 \EndFor
+\State $CW^{(m+1)} \leftarrow 2 \oplus s_1^{(m)} \oplus s_2^{(m)} || \cdots || p \oplus s_1^{(m)} \oplus s_p^{(m)}$, where $2, \cdots, p$ expressed in binary.
+\State $k_j \leftarrow s_j^{(0)}||\{t_{j,k}^{(0)}\}_{k \in [p^-]}||CW^{(1)}||\cdots||CW^{(m+1)}$.
+\State \textbf{return} $(k_1, \cdots, k_p)$.
+\end{algorithmic}
+
+\vspace{10px}
+\Eval($k_j, \beta$):
+\begin{algorithmic}[1]
+\State Parse $k_j = s^{(0)}||\{t_k^{(0)}\}_{k \in [p^-]}||CW^{(1)}||\cdots||CW^{(m+1)}$.
+\For{$i = 1 \text{ to } m$}
+\State Parse $CW^{(i)} = \{CW^{(i)}_k\}_{k \in [p^-]}$ and $CW^{(i)}_k = CW_{s_k}||\{CW_{t_{j,k}^0}\}_{j \in [p^-]}||\{CW_{t_{j,k}^1}\}_{j \in [p^-]} $.
+\State $\tau^{(i)} \leftarrow G(s^{(i-1)}) \bigoplus_{k \in [p^-]} \left(t^{(i-1)}_k \cdot \left(CW_{s_k}||\{CW_{t_{j,k}^0}\}_{j \in [p^-]}||CW_{s_k}||\{CW_{t_{j,k}^1}\}_{j \in [p^-]}\right)\right)$.
+\State Parse $\tau^{(i)} = s^0||\{t_{k}^0\}_{k \in [p^-]} ||s^1||\{t_k^1\}_{k \in [p^-]}$.
+\State $s^{(i)} \leftarrow s^{\beta_i}, t_k^{(i)} \leftarrow t_k^{\beta_i}$, for $k \in [p^-]$.
+\EndFor
+\State Parse $CW^{(m+1)} = CW^{(m+1)}_2 || \cdots || CW^{(m+1)}_p$.
+\State \textbf{return} $s^{(m)} \bigoplus_{k \in [p^-]} \left(t_k^{(m)} \cdot CW^{(m+1)}_k \right)$.
+\end{algorithmic}
+
+\vspace{10px}
+\Rec($s_1, \cdots, s_p$):
+\begin{algorithmic}[1]
+\State $a := 0, b := 0$.
+\For{$j,k \in [p]$ with $j < k$}
+\If{$s_j \neq s_k$}
+\State $a := a + 1$.
+\Else
+\State $b := b + 1$.
+\EndIf
+\EndFor
+\If{$a > b$}
+\State \textbf{return} $1_\mathbb{F}$.
+\Else
+\State \textbf{return} $0_\mathbb{F}$.
+\EndIf
 \end{algorithmic}
 \end{algorithm}
 
