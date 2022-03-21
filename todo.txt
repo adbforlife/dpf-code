@@ -7,4 +7,4 @@ notes:
 work for PIR. The additional requirement for a DPF to work for PIR is to have
 the evaluation function be additively (or other kinds) homomorphic. Although,
 most natural DPF schemes can be easily used for PIR.
-2. 
+2. Introduce the matrix interpretation of control bits
