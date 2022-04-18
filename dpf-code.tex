@@ -253,7 +253,7 @@ Todo.
       \State Sample $c_{j,0}, c_{j,1} \leftarrow \mathbb{F}^*$ for $i < j \le m+1$.
       \State Find $\{d_k\}_{i \le k \le m}$ such that $a_id_i + a_{i+1}c_{i+1, \overline{\alpha_i}} = 0_\mathbb{F}$.
       \State Form $CW^{(i)} = \{c_{j,0} || c_{j,1}\}_{i < j \le m+1} || \{d_k\}_{i \le k \le m}$.
-      \State For each $i < j \le m+1$, update $a_j \leftarrow a_j \cdot c_{j, \beta_i} + a_{j-1} \cdot d_{j-1}$.
+      \State For each $i < j \le m+1$, update $a_j \leftarrow a_j \cdot c_{j, \alpha_i} + a_{j-1} \cdot d_{j-1}$.
     \EndFor
     \State $CW^{(m+1)} \leftarrow (a_{m+1})^{-1}$.
     \State $\{k_j\} \leftarrow [a_1] || \cdots || [a_{m+1}] || CW^{(1)} || \cdots || CW^{(m+1)}$.
