@@ -32,12 +32,17 @@ bits DpfTree::Gen(bits ind) {
   // 3. Starting loop for each index bit
   for (int i = 1; i < m_+1; ++i) {
     // 4. PRG and parse
-    std::vector<uint8_t*> ss0;
-    std::vector<uint8_t*> ss1;
+    std::vector<Seed> ss0;
+    std::vector<Seed> ss1;
     std::vector<std::vector<bool>> ts;
     for (int j = 0; j < p_; ++j) {
-      // uint8_t* ciphertext = G(ss[j], blen(p_));
+      ss0.push_back({});
+      ss1.push_back({});
+      ts.push_back({});
+      uint8_t* ciphertext = G(ss[j], blen(p_));
+      parse(ciphertext, ss0[j], ss1[j], ts[j], p_); 
     }
+    // 5. Correction words for seeds
   }
   
   return {0,1};

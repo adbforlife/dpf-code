@@ -71,3 +71,19 @@ void parse(uint8_t* bs, Seed& s0, Seed& s1, std::vector<bool>& ts, uint32_t p) {
     }
   }
 }
+
+Seed XOR(const Seed& s0, const Seed& s1) {
+  Seed res{};
+  for (int i = 0; i < 16; ++i) {
+    res.s[i] = s0.s[i] ^ s1.s[i];
+  }
+  return res;
+}
+
+uint8_t* XOR(const uint8_t* bs0, const uint8_t* bs1, uint32_t len) {
+  uint8_t* res = new uint8_t[len];
+  for (int i = 0; i < len; ++i) {
+    res[i] = bs0[i] ^ bs1[i];
+  }
+  return res;
+}

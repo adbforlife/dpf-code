@@ -56,3 +56,30 @@ TEST(DPFTest, Parse) {
     EXPECT_EQ(ts[i+8], (29 >> i) & 1);
   }
 }
+
+TEST(DPFTest, Xor) {
+  Seed s0{};
+  Seed s1{};
+  memset(&s0.s, 0, 16);
+  memset(&s1.s, 0, 16);
+  s0.s[0] = 10;
+  s0.s[5] = 23;
+  s1.s[1] = 40;
+  s1.s[5] = 55;
+  Seed s = XOR(s0, s1);
+  EXPECT_EQ(s.s[0], 10);
+  EXPECT_EQ(s.s[1], 40);
+  EXPECT_EQ(s.s[2], 0);
+  EXPECT_EQ(s.s[5], 23 ^ 55);
+
+  uint8_t b0[10];
+  uint8_t b1[5];
+  memset(b0, 0, 10);
+  memset(b1, 0, 5ll);
+  b0[0] = 33;
+  b0[1] = 35;
+  b1[0] = 6;
+  uint8_t* b = XOR(b0, b1, 5);
+  EXPECT_EQ(b[0], 33 ^ 6);
+  EXPECT_EQ(b[1], 35);
+}

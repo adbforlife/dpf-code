@@ -16,3 +16,7 @@ unsigned char* G(const Seed& seed, uint32_t plen);
 uint32_t blen(uint32_t p);
 // Parse bytes into s's and t's. Assume bs has correct length and ts empty
 void parse(uint8_t* bs, Seed& s0, Seed& s1, std::vector<bool>& ts, uint32_t p);
+// Xoring bytes
+uint8_t* XOR(const uint8_t* bs0, const uint8_t* bs1, uint32_t len);
+// Xoring seeds
+Seed XOR(const Seed& s0, const Seed& s1);
