@@ -42,6 +42,7 @@ int main() {
   DpfTree t = DpfTree(5, 10);
   bits ind = {0, 1, 0, 0, 1, 1, 0, 0, 1, 1};
   t.Gen(ind);
+
   // G(NULL, 3, NULL, NULL, NULL);
   std::cout << "hi\n";
   return 0;

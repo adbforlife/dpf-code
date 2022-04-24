@@ -5,5 +5,4 @@
 
 void gen_key(unsigned char* buf);
 
-int G(unsigned char *plaintext, int plaintext_len, unsigned char *key,
-            unsigned char *iv, unsigned char *ciphertext);
+unsigned char* G(unsigned char *key, uint32_t plen);
