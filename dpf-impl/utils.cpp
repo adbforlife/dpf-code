@@ -3,7 +3,6 @@
 
 #include "utils.h"
 
-
 void handleErrors()
 {
   // ERR_print_errors_fp(stderr);
@@ -54,4 +53,21 @@ unsigned char* G(unsigned char *key, uint32_t plen)
   /* Clean up */
   EVP_CIPHER_CTX_free(ctx);
   return ciphertext;
+}
+
+uint32_t blen(uint32_t p) {
+  return 16 * 2 + (2 * (p - 1) + 7) / 8;
+}
+
+void parse(uint8_t* bs, uint8_t* s0, uint8_t* s1, std::vector<bool>& ts, uint32_t p) {
+  uint32_t len = blen(p); 
+  memcpy(s0, bs, 16);
+  memcpy(s1, bs+16, 16);
+  for (int i = 32; i < len; ++i) {
+    uint8_t b = bs[i];
+    for (int j = 0; j < 8; ++j) {
+      ts.push_back((b >> j) & 1);
+      if (ts.size() == (p-1) * 2) return;
+    }
+  }
 }

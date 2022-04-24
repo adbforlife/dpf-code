@@ -1,9 +1,11 @@
+#include <vector>
 #include "utils.h"
 
 #include "gtest/gtest.h"
 
 TEST(DPFTest, PRG) {
   unsigned char* key = new unsigned char[16];
+  memset(key, 0, 16);
   key[3] = 3;
   key[5] = 5;
   unsigned char* c1;
@@ -26,4 +28,27 @@ TEST(DPFTest, PRG) {
   EXPECT_EQ(c2[15], 153);
   EXPECT_EQ(c3[15], 153);
   EXPECT_EQ(c4[15], 153);
+}
+
+TEST(DPFTest, Parse) {
+  unsigned char* key = new unsigned char[16];
+  memset(key, 0, 16);
+  key[3] = 3;
+  key[5] = 5;
+
+  uint32_t p = 6;
+  uint32_t len = blen(p);
+  EXPECT_EQ(len, 34);
+  uint8_t* res = G(key, len);
+  uint8_t* s0;
+  uint8_t* s1;
+  std::vector<bool> ts;
+  parse(res, s0, s1, ts, p);
+  ASSERT_EQ(ts.size(), (p-1) * 2);
+  for (int i = 0; i < 8; ++i) {
+    EXPECT_EQ(ts[i], (122 >> i) & 1);
+  }
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_EQ(ts[i+8], (29 >> i) & 1);
+  }
 }
