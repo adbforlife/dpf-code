@@ -33,10 +33,10 @@ unsigned char* G(unsigned char *key, uint32_t plen)
       handleErrors();
 
   /*
-    * Provide the message to be encrypted, and obtain the encrypted output.
-    * EVP_EncryptUpdate can be called multiple times if necessary
-    */
-  plen = (plen + 15) / 16;
+   * Provide the message to be encrypted, and obtain the encrypted output.
+   * EVP_EncryptUpdate can be called multiple times if necessary
+   */
+  plen = (plen + 15) / 16 * 16;
   unsigned char* plaintext = new unsigned char[plen];
   memset(plaintext, 0, plen);
   unsigned char* ciphertext = new unsigned char[plen];
@@ -45,13 +45,13 @@ unsigned char* G(unsigned char *key, uint32_t plen)
       handleErrors();
 
   /*
-    * Finalise the encryption with padding (shouldn't exist)
-    */
+   * Finalise the encryption with padding (shouldn't exist).
+   * Still called to clean up things in memory
+   */
   if(1 != EVP_EncryptFinal_ex(ctx, ciphertext + len, &len))
       handleErrors();
 
   /* Clean up */
   EVP_CIPHER_CTX_free(ctx);
-
   return ciphertext;
 }
