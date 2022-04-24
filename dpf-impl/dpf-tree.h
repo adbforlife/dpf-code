@@ -2,10 +2,6 @@
 
 typedef std::vector<bool> bits;
 
-struct Seed {
-  unsigned char s[16];
-};
-
 class DpfTree {
   public:
     // p: number of parties, m: 2^m items, lambda: sec param

@@ -20,7 +20,7 @@ bits DpfTree::Gen(bits ind) {
   }
 
   // 2: Initialize control bits
-  std::vector<std::vector<uint8_t>> ts;
+  std::vector<std::vector<bool>> ts;
   for (int j = 1; j < p_+1; ++j) {
     ts.push_back({});
     for (int k = 2; k < p_+1; ++k) {
@@ -31,9 +31,14 @@ bits DpfTree::Gen(bits ind) {
 
   // 3. Starting loop for each index bit
   for (int i = 1; i < m_+1; ++i) {
-    continue;
+    // 4. PRG and parse
+    std::vector<uint8_t*> ss0;
+    std::vector<uint8_t*> ss1;
+    std::vector<std::vector<bool>> ts;
+    for (int j = 0; j < p_; ++j) {
+      // uint8_t* ciphertext = G(ss[j], blen(p_));
+    }
   }
-
   
   return {0,1};
 }

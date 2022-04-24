@@ -1,3 +1,5 @@
 For implementation
-1. Set up and test for G(s) using AES
-2. Parse 
+1. [done] Set up and test for G(s) using AES
+2. [done] Parse 
+3. Xor things
+4. Gen/Eval
