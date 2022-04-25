@@ -93,10 +93,10 @@ TEST(DPFTest, Xor) {
 }
 
 TEST(DPFTest, Correctness) {
+  std::srand(std::time(nullptr));
   for (int j = 0; j < 20; ++j) {
     int p = 5;
     int m = 10;
-    std::srand(std::time(nullptr)); 
     DpfTree T = DpfTree(p, m);
 
     std::vector<bool> alpha;
@@ -105,21 +105,32 @@ TEST(DPFTest, Correctness) {
     }
 
     std::vector<Key> ks = T.Gen(alpha);
-    Seed s0 = T.Eval(ks[std::rand() % p], alpha);
-    Seed s1 = T.Eval(ks[std::rand() % p], alpha);
+    int p0 = std::rand() % p;
+    int p1 = std::rand() % p;
+    while (p1 == p0) p1 = std::rand() % p;
+    Seed s0 = T.Eval(ks[p0], alpha);
+    Seed s1 = T.Eval(ks[p1], alpha);
     EXPECT_EQ(T.Rec(s0, s1), 1);
 
     std::vector<bool> beta;
     for (int i = 0; i < m; ++i) {
       beta.push_back(std::rand() & 1);
     }
+    std::cout << "alpha: ";
+    print_bits(alpha);
+    std::cout << "beta: ";
+    print_bits(beta);
     bool is_equal = true;
     for (int i = 0; i < m; ++i) {
       if (alpha[i] != beta[i]) is_equal = false;
     }
 
-    s0 = T.Eval(ks[std::rand() % p], alpha);
-    s1 = T.Eval(ks[std::rand() % p], alpha);
+    p0 = std::rand() % p;
+    p1 = std::rand() % p;
+    while (p1 == p0) p1 = std::rand() % p;
+    std::cout << "p0: " << p0 << ", p1: " << p1 << "\n";
+    s0 = T.Eval(ks[p0], beta);
+    s1 = T.Eval(ks[p1], beta);
     EXPECT_EQ(T.Rec(s0, s1), is_equal);
   }
 }

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <iomanip>
 #include <string.h>
 
 #include "utils.h"
@@ -94,4 +95,18 @@ std::vector<bool> XOR(std::vector<bool> t0, std::vector<bool> t1) {
     res.push_back(t0[i] ^ t1[i]);
   }
   return res;
+}
+
+void print_bits(const std::vector<bool>& t) {
+  for (int i = 0; i < t.size(); ++i) {
+    std::cout << t[i];
+  }
+  std::cout << "\n";
+}
+
+void print_seed(const Seed& s) {
+  for (int i = 0; i < 16; ++i) {
+    printf("%02x", s.s[i]);
+  }
+  std::cout << "\n";
 }

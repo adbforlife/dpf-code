@@ -30,8 +30,8 @@ std::vector<Key> DpfTree::Gen(bits ind) {
   for (int j = 1; j < p_+1; ++j) {
     ts.push_back({});
     for (int k = 2; k < p_+1; ++k) {
-      if (k == j) ts[j].push_back(1);
-      else ts[j].push_back(0);
+      if (k == j) ts[j-1].push_back(1);
+      else ts[j-1].push_back(0);
     }
   }
 
@@ -44,7 +44,7 @@ std::vector<Key> DpfTree::Gen(bits ind) {
   // 4. Starting loop for each index bit
   for (int i = 1; i < m_+1; ++i) {
     // 5. Determine alpha_i
-    uint8_t alpha = ind[i-1];
+    bool alpha = ind[i-1];
     // 6. PRG and parse
     std::vector<Seed> ss0;
     std::vector<Seed> ss1;
@@ -52,15 +52,18 @@ std::vector<Key> DpfTree::Gen(bits ind) {
     for (int j = 0; j < p_; ++j) {
       ss0.push_back({});
       ss1.push_back({});
-      ts.push_back({});
+      tsi.push_back({});
       uint8_t* ciphertext = G(ss[j], blen(p_));
       parse(ciphertext, ss0[j], ss1[j], tsi[j], p_); 
     }
     // 7. Correction words for seeds
     std::vector<Seed> CWs;
     for (int k = 2; k < p_+1; ++k) {
-      if (alpha) CWs.push_back(XOR(ss0[0], ss0[k-1]));
-      else CWs.push_back(XOR(ss1[0], ss1[k-1]));
+      if (alpha) {
+        CWs.push_back(XOR(ss0[0], ss0[k-1]));
+      } else {
+        CWs.push_back(XOR(ss1[0], ss1[k-1]));
+      }
     }
     // 8. Correction words for control bits.
     std::vector<std::vector<bool>> CWt0;
@@ -87,6 +90,7 @@ std::vector<Key> DpfTree::Gen(bits ind) {
       CW[j-2].ts1 = CWt1[j-2];
     }
     // 10. new s/t
+    auto old_ts = ts;
     for (int j = 0; j < p_; ++j) {
       if (alpha) {
         ss[j] = ss1[j];
@@ -101,7 +105,7 @@ std::vector<Key> DpfTree::Gen(bits ind) {
       }
 
       for (int k = 2; k < p_+1; ++k) {
-        if (ts[j][k-2]) {
+        if (old_ts[j][k-2]) {
           ss[j] = XOR(ss[j], CW[k-2].s);
           for (int l = 2; l < p_+1; ++l) {
             if (alpha) {
@@ -141,8 +145,16 @@ Seed DpfTree::Eval(Key k, bits ind) {
     if (beta) s = s1;
     else s = s0;
     // 2. tau
+    auto old_t = t;
     for (int j = 2; j < p_+1; ++j) {
-      if (t[j-2]) {
+      if (beta) {
+        t[j-2] = ti[j-2+p_-1];
+      } else {
+        t[j-2] = ti[j-2];
+      }
+    }
+    for (int j = 2; j < p_+1; ++j) {
+      if (old_t[j-2]) {
         s = XOR(s, k.CWm[i][j-2].s);
         if (beta) {
           t = XOR(t, k.CWm[i][j-2].ts1);
@@ -164,9 +176,9 @@ Seed DpfTree::Eval(Key k, bits ind) {
 bool DpfTree::Rec(Seed s0, Seed s1) {
   Seed s = XOR(s0, s1);
   for (int i = 0; i < 16; ++i) {
-    if (s.s[i]) return false;
+    if (s.s[i]) return true;
   }
-  return true;
+  return false;
 }
 
 /*

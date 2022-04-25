@@ -26,4 +26,9 @@ Seed XOR(const Seed& s0, const Seed& s1);
 // Xoring bits
 std::vector<bool> XOR(std::vector<bool> t0, std::vector<bool> t1);
 
+
+/* Debug Use */
+void print_bits(const std::vector<bool>& t);
+void print_seed(const Seed& s);
+
 #endif // UTILS_H
