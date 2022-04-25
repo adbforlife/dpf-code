@@ -87,3 +87,11 @@ uint8_t* XOR(const uint8_t* bs0, const uint8_t* bs1, uint32_t len) {
   }
   return res;
 }
+
+std::vector<bool> XOR(std::vector<bool> t0, std::vector<bool> t1) {
+  std::vector<bool> res;
+  for (int i = 0; i < t0.size(); ++i) {
+    res.push_back(t0[i] ^ t1[i]);
+  }
+  return res;
+}

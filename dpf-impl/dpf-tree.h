@@ -20,8 +20,9 @@ class DpfTree {
     // p: number of parties, m: 2^m items, lambda: sec param
     DpfTree(int p, int m, int lambda = 128);
     std::vector<Key> Gen(bits ind);
-    bits Eval(bits k, bits ind);
-    bits Rec(std::vector<bits> shares);
+    Seed Eval(Key k, bits ind);
+    // For DPF only, need update for PIR.
+    bool Rec(Seed s0, Seed s1);
   private:
     int p_;
     int m_;

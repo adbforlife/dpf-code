@@ -82,4 +82,11 @@ TEST(DPFTest, Xor) {
   uint8_t* b = XOR(b0, b1, 5);
   EXPECT_EQ(b[0], 33 ^ 6);
   EXPECT_EQ(b[1], 35);
+
+  std::vector<bool> t0 = {true, false, false};
+  std::vector<bool> t1 = {true, true, false};
+  auto t = XOR(t0, t1);
+  EXPECT_EQ(t[0], 0);
+  EXPECT_EQ(t[1], 1);
+  EXPECT_EQ(t[2], 0);
 }

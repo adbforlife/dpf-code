@@ -128,6 +128,47 @@ std::vector<Key> DpfTree::Gen(bits ind) {
   return keys;
 }
 
+Seed DpfTree::Eval(Key k, bits ind) {
+  Seed s = k.s0;
+  std::vector<bool> t = k.t0;
+  for (int i = 0; i < m_; ++i) {
+    bool beta = ind[i];
+    // 1. PRG
+    Seed s0, s1;
+    std::vector<bool> ti;
+    uint8_t* ciphertext = G(s, blen(p_));
+    parse(ciphertext, s0, s1, ti, p_); 
+    if (beta) s = s1;
+    else s = s0;
+    // 2. tau
+    for (int j = 2; j < p_+1; ++j) {
+      if (t[j-2]) {
+        s = XOR(s, k.CWm[i][j-2].s);
+        if (beta) {
+          t = XOR(t, k.CWm[i][j-2].ts1);
+        } else {
+          t = XOR(t, k.CWm[i][j-2].ts0);
+        }
+      }
+    }
+  }
+  // 3. CW_{m+1}
+  for (int j = 2; j < p_+1; ++j) {
+    if (t[j-2]) {
+      s = XOR(s, k.sm[j-2]);
+    }
+  }
+  return s;
+}
+
+bool Rec(Seed s0, Seed s1) {
+  Seed s = XOR(s0, s1);
+  for (int i = 0; i < 16; ++i) {
+    if (s.s[i]) return false;
+  }
+  return true;
+}
+
 int main() {
   DpfTree t = DpfTree(5, 10);
   bits ind = {0, 1, 0, 0, 1, 1, 0, 0, 1, 1};
