@@ -12,13 +12,13 @@ find_package(OpenSSL REQUIRED)
 find_package(GTest REQUIRED)
 
 add_library(Util utils.cpp)
+add_library(DpfTree dpf-tree.cpp)
 
 # add the executable
-add_executable(dpf dpf-tree.cpp)
 add_executable(test-dpf tests.cpp)
-target_link_libraries(test-dpf Util)
+target_link_libraries(test-dpf Util DpfTree)
 target_link_libraries(test-dpf OpenSSL::SSL)
 target_link_libraries(test-dpf GTest::gtest GTest::gtest_main)
 
-target_link_libraries(dpf PUBLIC OpenSSL::SSL)
-target_link_libraries(dpf PUBLIC Util)
+#target_link_libraries(dpf PUBLIC OpenSSL::SSL)
+#target_link_libraries(dpf PUBLIC Util)

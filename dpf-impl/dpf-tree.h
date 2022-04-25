@@ -1,3 +1,6 @@
+#ifndef DPF_TREE_H
+#define DPF_TREE_H
+
 #include <vector>
 
 typedef std::vector<bool> bits;
@@ -27,3 +30,5 @@ class DpfTree {
     int p_;
     int m_;
 };
+
+#endif // DPF_TREE_H

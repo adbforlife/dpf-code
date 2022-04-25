@@ -1,3 +1,6 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <vector>
 #include <openssl/aes.h>
 #include <openssl/evp.h>
@@ -22,3 +25,5 @@ uint8_t* XOR(const uint8_t* bs0, const uint8_t* bs1, uint32_t len);
 Seed XOR(const Seed& s0, const Seed& s1);
 // Xoring bits
 std::vector<bool> XOR(std::vector<bool> t0, std::vector<bool> t1);
+
+#endif // UTILS_H

@@ -161,7 +161,7 @@ Seed DpfTree::Eval(Key k, bits ind) {
   return s;
 }
 
-bool Rec(Seed s0, Seed s1) {
+bool DpfTree::Rec(Seed s0, Seed s1) {
   Seed s = XOR(s0, s1);
   for (int i = 0; i < 16; ++i) {
     if (s.s[i]) return false;
@@ -169,6 +169,7 @@ bool Rec(Seed s0, Seed s1) {
   return true;
 }
 
+/*
 int main() {
   DpfTree t = DpfTree(5, 10);
   bits ind = {0, 1, 0, 0, 1, 1, 0, 0, 1, 1};
@@ -178,3 +179,4 @@ int main() {
   std::cout << "hi\n";
   return 0;
 }
+*/

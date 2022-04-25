@@ -1,5 +1,6 @@
 #include <vector>
 #include "utils.h"
+#include "dpf-tree.h"
 
 #include "gtest/gtest.h"
 
@@ -89,4 +90,36 @@ TEST(DPFTest, Xor) {
   EXPECT_EQ(t[0], 0);
   EXPECT_EQ(t[1], 1);
   EXPECT_EQ(t[2], 0);
+}
+
+TEST(DPFTest, Correctness) {
+  for (int j = 0; j < 20; ++j) {
+    int p = 5;
+    int m = 10;
+    std::srand(std::time(nullptr)); 
+    DpfTree T = DpfTree(p, m);
+
+    std::vector<bool> alpha;
+    for (int i = 0; i < m; ++i) {
+      alpha.push_back(std::rand() & 1);
+    }
+
+    std::vector<Key> ks = T.Gen(alpha);
+    Seed s0 = T.Eval(ks[std::rand() % p], alpha);
+    Seed s1 = T.Eval(ks[std::rand() % p], alpha);
+    EXPECT_EQ(T.Rec(s0, s1), 1);
+
+    std::vector<bool> beta;
+    for (int i = 0; i < m; ++i) {
+      beta.push_back(std::rand() & 1);
+    }
+    bool is_equal = true;
+    for (int i = 0; i < m; ++i) {
+      if (alpha[i] != beta[i]) is_equal = false;
+    }
+
+    s0 = T.Eval(ks[std::rand() % p], alpha);
+    s1 = T.Eval(ks[std::rand() % p], alpha);
+    EXPECT_EQ(T.Rec(s0, s1), is_equal);
+  }
 }
